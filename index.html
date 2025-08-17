@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TimeBox – Message to the Future</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="stars"></div>
+  <div class="container">
+    <h1>📩 Send a Message to the Future</h1>
+    <input type="text" id="name" placeholder="Your Name">
+    <input type="email" id="email" placeholder="Your Email">
+    <textarea id="message" placeholder="Your message to the future..."></textarea>
+    <input type="datetime-local" id="date">
+    <button onclick="submitForm()">Lock TimeBox</button>
+  </div>
+
+  <script>
+    function submitForm() {
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const message = document.getElementById("message").value;
+      const date = document.getElementById("date").value;
+
+      if (!name || !email || !message || !date) {
+        alert("Please fill all fields.");
+        return;
+      }
+
+      fetch("/api/send-later", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message, date })
+      })
+      .then(res => {
+        if (res.ok) {
+          alert("✅ TimeBox locked! Your message will be sent later.");
+        } else {
+          return res.text().then(text => {
+            console.error("❌ Server Error:", text);
+            alert("❌ Error: " + text);
+          });
+        }
+      })
+      .catch(err => {
+        console.error("❌ Network Error:", err);
+        alert("❌ Failed to send message.");
+      });
+    }
+  </script>
+</body>
+</html>
